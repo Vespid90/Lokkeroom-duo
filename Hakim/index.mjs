@@ -1,30 +1,18 @@
 import express from 'express';
-import mysql from 'mysql2';
 import signInRoute from './routes/signIn.mjs';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// const connection = mysql.createConnection({
-//     host: process.env.DB_HOST,      // Adresse de ton serveur MariaDB
-//     user: process.env.DB_USER,           // Utilisateur de la base de données
-//     password: process.env.DB_PASSWORD,  // Mot de passe de l'utilisateur
-//     database: process.env.DB_NAME   // Nom de la base de données
-//   });
-
-const connection = mysql.createConnection({
-    host: '127.0.0.1',      // Adresse de ton serveur MariaDB
-    user: 'hakim',           // Utilisateur de la base de données
-    password: 'password',   // Mot de passe de l'utilisateur
-    database: 'LokkeroomDB'     // Nom de la base de données
-  });
+import { connection }  from "./routes/logInDB.mjs";
 
 connection.connect((err) => {
-if (err) {
-    console.error('Erreur de connexion à la base de données : ', err);
-    return;
-}
-});
+    if(err) {
+        console.error('Erreur de connexion à la base de données');
+        return;
+    }
+    console.log('Connecté à la base de données');
+})
 
 const PORT = 3001;
 const app = express();
