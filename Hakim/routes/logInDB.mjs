@@ -21,7 +21,7 @@ export { connection };
 
 //INFO
 
-//Plus besoin d'importer mysql2 dans les autres fichier.mjs
+//Plus besoin d'importer mysql2 ; dotenv et dotenv.config() dans les autres fichier.mjs
 //Il faut copier ces lignes de codes dans chacun des fichier.mjs
 // ATTENTION à bien adapter le chemin d'accès de "./logInBD.mjs"
 

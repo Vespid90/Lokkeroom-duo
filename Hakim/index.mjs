@@ -1,8 +1,6 @@
 import express from 'express';
 import signInRoute from './routes/signIn.mjs';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import logInRoute from './routes/logIn.mjs';
 
 import { connection }  from "./routes/logInDB.mjs";
 
@@ -20,6 +18,7 @@ const app = express();
 app.use(express.json());
 
 app.use("/signIn",signInRoute);
+app.use("/logIn", logInRoute);
 
 app.get('/', (req, res) => {
     res.send({ data: `Here is your data` });
