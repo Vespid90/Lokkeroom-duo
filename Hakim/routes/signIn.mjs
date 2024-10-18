@@ -1,9 +1,8 @@
 import express from 'express';
+import { connection }  from "./logInDB.mjs";
 
-const PORT = 3001;
 const router = express.Router();
 
-import { connection }  from "./logInDB.mjs";
 
 connection.connect((err) => {
     if(err) {
@@ -21,7 +20,7 @@ router.post('/', (req, res) => {
     
     connection.query(
         'INSERT INTO users (email, password) VALUES (?, ?)',
-        [ req.body.mail, req.body.password ],
+        [ req.body.mail, req.body.password],
         (err, results) => {
           if (err) {
             console.error('Erreur lors de l\'insertion des données : ', err);
@@ -29,7 +28,7 @@ router.post('/', (req, res) => {
         }
       );
 
-    res.send({ data: `User created` })
+    res.send({ data: `Utilisateur créé et stocké dans la base de données` })
   }
 )
 

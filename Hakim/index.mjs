@@ -1,6 +1,10 @@
 import express from 'express';
 import signInRoute from './routes/signIn.mjs';
 import logInRoute from './routes/logIn.mjs';
+import messagesRoute from './routes/messages.mjs';
+import usersRoute from './routes/users.mjs';
+
+
 
 import { connection }  from "./routes/logInDB.mjs";
 
@@ -19,6 +23,9 @@ app.use(express.json());
 
 app.use("/signIn",signInRoute);
 app.use("/logIn", logInRoute);
+app.use("/messages", messagesRoute);
+app.use("/users", usersRoute);
+
 
 app.get('/', (req, res) => {
     res.send({ data: `Here is your data` });
@@ -41,9 +48,6 @@ app.delete('/', (req, res) => {
 )
 
 app.listen(PORT, () => console.log(`Server started: http://localhost:${PORT}/`))
-
-
-
 
 
 // const readline = require('node:readline/promises');
