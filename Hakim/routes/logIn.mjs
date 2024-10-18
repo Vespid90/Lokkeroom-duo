@@ -1,8 +1,8 @@
 import express from 'express';
-const router = express.Router();
-
 import { connection }  from "./logInDB.mjs";
 
+const router = express.Router();
+let userId = 0;
 
 connection.connect((err) => {
     if (err) {
@@ -10,33 +10,32 @@ connection.connect((err) => {
     }
 });
 
-
 router.get('/', (req, res) => {
     res.end();
 });
 
 
 router.post('/', (req, res) => {
-    const { mail, password } = req.body;
-
 
     connection.query(
-        'SELECT email, password FROM users WHERE email=? AND password=?',
-        [mail, password],
+        'SELECT email, password, userId FROM users WHERE email=? AND password=?',
+        [req.body.mail, req.body.password],
         (err, results) => {
             if (err) {
                 console.error('Erreur lors de la vérification des logs', err);
-                return res.json({ success: false, message: 'Erreur interne du serveur' });
+                return res.send({ success: false, message: 'Erreur interne du serveur' });
             }
 
             if (results.length > 0) {
-                return res.json({
+                userId = results[0].userId;
+                console.log(userId);
+                return res.send({
                     success: true,
                     message: 'Email et password corrects',
                     user: results[0]
                 });
             } else {
-                return res.json({
+                return res.send({
                     success: false,
                     message: 'Email ou password incorrect'
                 });
@@ -46,3 +45,4 @@ router.post('/', (req, res) => {
 });
 
 export default router;
+export {userId};
