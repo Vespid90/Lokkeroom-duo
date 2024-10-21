@@ -3,8 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log(process.env.DB_USER);
-
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,      // Adresse de ton serveur MariaDB
     user: process.env.DB_USER,           // Utilisateur de la base de données
@@ -23,17 +21,11 @@ connection.connect((err) => {
 );
 
 connection.query(
-    'SELECT email,text FROM users INNER JOIN messages ON users.userId = messages.userId WHERE lobbyId = ?',
-    [ 1 ],
+    'SELECT messages.userId, lobby.adminId, text FROM messages INNER JOIN lobby ON messages.lobbyId = lobby.lobbyId WHERE messageId = 5',
     (err, results) => {
-        let arrMessage = [];
         if (err) {
             console.error('Erreur lors de l\'insertion des données : ', err);
         }
         console.log(results);
-        for(let count = 0; count < results.length; count++){
-            arrMessage.push(results[count].email + " - " + results[count].text)
-        }
-        console.log(arrMessage);
     }
   );

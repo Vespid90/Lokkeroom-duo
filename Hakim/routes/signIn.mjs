@@ -6,8 +6,6 @@ dotenv.config();
 const PORT = 3001;
 const router = express.Router();
 
-console.log(process.env.DB_USER);
-
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,      // Adresse de ton serveur MariaDB
     user: process.env.DB_USER,           // Utilisateur de la base de données
