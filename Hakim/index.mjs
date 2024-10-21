@@ -1,24 +1,26 @@
 import express from 'express';
-import mysql from 'mysql2';
 import signInRoute from './routes/signIn.mjs';
+
+import logInRoute from './routes/logIn.mjs';
+import messagesRoute from './routes/messages.mjs';
+import usersRoute from './routes/users.mjs';
+
 import lobbyRoute from './routes/lobby.mjs';
-import dotenv from 'dotenv';
 
-dotenv.config();
 
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,      // Adresse de ton serveur MariaDB
-    user: process.env.DB_USER,           // Utilisateur de la base de données
-    password: process.env.DB_PASSWORD,  // Mot de passe de l'utilisateur
-    database: process.env.DB_NAME   // Nom de la base de données
-});
+
+
+
+import { connection }  from "./routes/logInDB.mjs";
 
 connection.connect((err) => {
-  if (err) {
-      console.error('Erreur de connexion à la base de données : ', err);
-      return;
-  }
-});
+    if(err) {
+        console.error('Erreur de connexion à la base de données');
+        return;
+    }
+    console.log('Connecté à la base de données');
+})
+
 
 const PORT = 3001;
 const app = express();
@@ -26,6 +28,10 @@ const app = express();
 app.use(express.json());
 
 app.use("/signIn",signInRoute);
+app.use("/logIn", logInRoute);
+app.use("/messages", messagesRoute);
+app.use("/users", usersRoute);
+
 
 app.use("/lobby",lobbyRoute);
 
@@ -51,9 +57,6 @@ app.delete('/', (req, res) => {
 )
 
 app.listen(PORT, () => console.log(`Server started: http://localhost:${PORT}/`))
-
-
-
 
 
 // const readline = require('node:readline/promises');

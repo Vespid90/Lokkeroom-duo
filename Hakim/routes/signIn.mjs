@@ -1,10 +1,9 @@
 import express from 'express';
-import mysql from 'mysql2';
-import dotenv from 'dotenv';
+import { connection }  from "./logInDB.mjs";
 
-dotenv.config();
-const PORT = 3001;
 const router = express.Router();
+
+
 
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,      // Adresse de ton serveur MariaDB
@@ -14,13 +13,11 @@ const connection = mysql.createConnection({
 });
 
 
-
 connection.connect((err) => {
-if (err) {
-    console.error('Erreur de connexion à la base de données : ', err);
-    return;
-}
-});
+    if(err) {
+        console.error('Erreur de connexion à la base de données');
+    }
+})
 
 router.get('/', (req, res) => {
     res.end();
@@ -30,7 +27,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     connection.query(
         'INSERT INTO users (email, password) VALUES (?, ?)',
-        [ req.body.mail, req.body.password ],
+        [ req.body.mail, req.body.password],
         (err, results) => {
           if (err) {
             console.error('Erreur lors de l\'insertion des données : ', err);
@@ -38,7 +35,7 @@ router.post('/', (req, res) => {
         }
       );
 
-    res.send({ data: `User created` })
+    res.send({ data: `Utilisateur créé et stocké dans la base de données` })
   }
 )
 
