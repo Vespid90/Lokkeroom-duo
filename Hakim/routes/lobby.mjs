@@ -1,20 +1,9 @@
 import express from 'express';
-import mysql from 'mysql2';
-import dotenv from 'dotenv';
+import { connection }  from "./logInDB.mjs";
+import verifyToken from "./access-token.mjs";
 
-dotenv.config();
-const PORT = 3001;
 const router = express.Router();
 const userId = 1;
-
-const connection = mysql.createConnection({
-    host: process.env.DB_HOST,      // Adresse de ton serveur MariaDB
-    user: process.env.DB_USER,           // Utilisateur de la base de données
-    password: process.env.DB_PASSWORD,  // Mot de passe de l'utilisateur
-    database: process.env.DB_NAME   // Nom de la base de données
-});
-
-
 
 connection.connect((err) => {
 if (err) {
@@ -23,10 +12,12 @@ if (err) {
 }
 });
 
+router.use('/', verifyToken);
+
 router.get('/', (req, res) => {
     connection.query(
-        'SELECT lobby.lobbyId,name FROM user_lobby INNER JOIN lobby ON user_lobby.lobbyId = lobby.lobbyId WHERE userId = 1',
-        [ userId ],
+        'SELECT lobby.lobbyId,name FROM user_lobby INNER JOIN lobby ON user_lobby.lobbyId = lobby.lobbyId WHERE userId = ?',
+        [ req.user.userId ],
         (err, results) => {
           if (err) {
             console.error('Erreur lors de l\'insertion des données : ', err);
@@ -40,7 +31,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => { //Crée un lobby
     connection.query(
         'INSERT INTO lobby (name, adminId) VALUES (?, ?)',
-        [ req.body.name, userId ],
+        [ req.body.name, req.user.userId ],
         (err, results) => {
           if (err) {
             console.error('Erreur lors de l\'insertion des données : ', err);
@@ -54,7 +45,7 @@ router.post('/', (req, res) => { //Crée un lobby
               }
               connection.query(
                 'INSERT INTO user_lobby (userId, lobbyId , role) VALUES (?, ?, ?)',
-                [userId, results[0].lobbyId, 'admin' ],
+                [req.user.userId, results[0].lobbyId, 'admin' ],
                 (err, results) => {
                   if (err) {
                     console.error('Erreur lors de l\'insertion des données : ', err);
@@ -124,7 +115,7 @@ router.get('/:lobbyId/:messageId', (req, res) => { //Affiche un message d'un lob
 router.post('/:lobbyId', (req, res) => { //Poster un message dans le lobby selectionné
     connection.query(
         'INSERT INTO messages (lobbyId, userId, text) VALUES ( ?, ?, ?);',
-        [ req.params.lobbyId, userId , req.body.text ],
+        [ req.params.lobbyId, req.user.userId , req.body.text ],
         (err, results) => {
             if (err) {
                 console.error('Erreur lors de l\'insertion des données : ', err);
@@ -143,7 +134,7 @@ router.post('/:lobbyId/add-user', (req, res) => { //Ajoute un utilisateur au lob
         if (err) {
           console.error('Erreur lors de l\'insertion des données : ', err);
         }
-        if(results[0].adminId === userId) {
+        if(results[0].adminId === req.user.userId) {
           connection.query(
             'SELECT userId FROM users WHERE email = ?', //s'il est admin alors on va faire une requête pour aller chercher le userId de l'utilisateur que l'on veut ajouter
             [req.body.mail],
@@ -183,7 +174,7 @@ router.post('/:lobbyId/remove-user', (req, res) => { //Supprime on utilisateur d
         if (err) {
           console.error('Erreur lors de l\'insertion des données : ', err);
         }
-        if(results[0].adminId === userId){
+        if(results[0].adminId === req.user.userId){
           connection.query(
             'SELECT users.userId FROM users INNER JOIN user_lobby ON users.userId = user_lobby.userId WHERE lobbyId = ? AND email = ?', //On va rechercher le userId de l'utilisateur que l'on veut remove
             [ req.params.lobbyId, req.body.mail ],
@@ -224,7 +215,7 @@ router.patch('/:messageId', (req, res) => {
             console.error('Erreur lors de l\'insertion des données : ', err);
         }
         if(results.length > 0){ //On check si le messageId indiqué dans l'URL existe
-          if(userId === results[0].userId || userId === results[0].adminId){  //On check si l'utilisateur qui est connecté à le droit de modifier le message
+          if(req.user.userId === results[0].userId || req.user.userId === results[0].adminId){  //On check si l'utilisateur qui est connecté à le droit de modifier le message
             connection.query(
               'UPDATE messages SET text = ? WHERE messageId = ?',
               [req.body.text, req.params.messageId],
