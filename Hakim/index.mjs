@@ -1,8 +1,13 @@
 import express from 'express';
 import signInRoute from './routes/signIn.mjs';
+
 import logInRoute from './routes/logIn.mjs';
 import messagesRoute from './routes/messages.mjs';
 import usersRoute from './routes/users.mjs';
+
+import lobbyRoute from './routes/lobby.mjs';
+
+
 
 
 
@@ -16,6 +21,7 @@ connection.connect((err) => {
     console.log('Connecté à la base de données');
 })
 
+
 const PORT = 3001;
 const app = express();
 
@@ -25,6 +31,9 @@ app.use("/signIn",signInRoute);
 app.use("/logIn", logInRoute);
 app.use("/messages", messagesRoute);
 app.use("/users", usersRoute);
+
+
+app.use("/lobby",lobbyRoute);
 
 
 app.get('/', (req, res) => {
