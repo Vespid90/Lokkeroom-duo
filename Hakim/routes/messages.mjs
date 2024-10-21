@@ -1,7 +1,11 @@
 import express from 'express';
 import { connection }  from "./logInDB.mjs";
+import verifyToken from "./access-token.mjs";
+
+
 const router = express.Router();
-import { userId } from './logIn.mjs';
+
+router.use('/', verifyToken);
 
 connection.connect((err) => {
     if(err) {
@@ -32,15 +36,12 @@ router.post('/', (req, res) => {
     }
 )
 
-
-
-
 router.delete('/:lobbyId/:messageId', (req, res) => {
 
 
     connection.query(
         'SELECT role FROM user_lobby WHERE userId = ? AND lobbyId = ?',
-        [req.params.userId, req.params.lobbyId],
+        [req.user.userId, req.params.lobbyId],
         (err, results) => {
             if (err) {
                 console.error('Erreur lors de la vérification du rôle', err);
@@ -49,14 +50,14 @@ router.delete('/:lobbyId/:messageId', (req, res) => {
 
             if (results.length > 0 && results[0].role === 'admin') {
                 connection.query(
-                    'DELETE FROM messages WHERE messageId = ? AND lobbyId = ?',
-                    [req.params.lobbyId, req.params.messageId],
+                    'DELETE FROM messages WHERE messageId = ?',
+                    [req.params.messageId],
                     (err, result) => {
                         if (err) {
                             console.error('Erreur lors de la suppression du message', err);
                             return res.send({ success: false, message: 'Erreur interne lors de la suppression' });
                         }
-
+                        console.log(req.params.messageId);
                         return res.send({ success: true, message: 'Message supprimé avec succès' });
                     }
                 );

@@ -1,8 +1,9 @@
 import express from 'express';
-import { connection }  from "./logInDB.mjs";
+import { connection } from "./logInDB.mjs";
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
-let userId = 0;
+const JWT_KEY = process.env.JWT_KEY;
 
 connection.connect((err) => {
     if (err) {
@@ -14,11 +15,10 @@ router.get('/', (req, res) => {
     res.end();
 });
 
-
 router.post('/', (req, res) => {
 
     connection.query(
-        'SELECT email, password, userId FROM users WHERE email=? AND password=?',
+        'SELECT userId, email FROM users WHERE email=? AND password=?',
         [req.body.mail, req.body.password],
         (err, results) => {
             if (err) {
@@ -27,12 +27,15 @@ router.post('/', (req, res) => {
             }
 
             if (results.length > 0) {
-                userId = results[0].userId;
-                console.log(userId);
+                const user = {
+                    userId: results[0].userId,
+                    email: results[0].email
+                };
+                const token = jwt.sign(user, JWT_KEY, { expiresIn: '1h' });
                 return res.send({
                     success: true,
-                    message: 'Email et password corrects',
-                    user: results[0]
+                    message: 'Authentification réussie',
+                    token
                 });
             } else {
                 return res.send({
@@ -45,4 +48,3 @@ router.post('/', (req, res) => {
 });
 
 export default router;
-export {userId};
