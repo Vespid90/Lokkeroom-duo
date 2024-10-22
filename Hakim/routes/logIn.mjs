@@ -12,7 +12,7 @@ connection.connect((err) => {
 });
 
 router.get('/', (req, res) => {
-    res.end();
+    res.render("logIn");
 });
 
 router.post('/', (req, res) => {
@@ -32,11 +32,12 @@ router.post('/', (req, res) => {
                     email: results[0].email
                 };
                 const token = jwt.sign(user, JWT_KEY, { expiresIn: '1h' });
-                return res.send({
-                    success: true,
-                    message: 'Authentification réussie',
-                    token
-                });
+                res.cookie('access-token', token, {
+                    httpOnly: true, // Rend le cookie inaccessible depuis JavaScript (sécurise contre les attaques XSS)
+                    secure: false,   // Utilise HTTPS pour ce cookie (en production)
+                    maxAge: 3600000, // Durée de validité du cookie (1 heure)
+                  });
+                return res.render("lobby")
             } else {
                 return res.send({
                     success: false,

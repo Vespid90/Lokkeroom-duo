@@ -5,6 +5,7 @@ import messagesRoute from './routes/messages.mjs';
 import usersRoute from './routes/users.mjs';
 import lobbyRoute from './routes/lobby.mjs';
 import { connection }  from "./routes/logInDB.mjs";
+import cookieParser from 'cookie-parser';
 
 connection.connect((err) => {
     if(err) {
@@ -18,6 +19,9 @@ const PORT = 3001;
 const app = express();
 
 app.use(express.json());
+app.set("view engine", "ejs");
+app.use(express.urlencoded({extended: true}));
+app.use(cookieParser());
 app.use("/signIn",signInRoute);
 app.use("/logIn", logInRoute);
 app.use("/messages", messagesRoute);

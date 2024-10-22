@@ -10,22 +10,23 @@ connection.connect((err) => {
 })
 
 router.get('/', (req, res) => {
-    res.end();
+    res.render("signIn");
   }
 )
 
 router.post('/', (req, res) => {
+    console.log(req.body);
+    const {mail,password} = req.body;
     connection.query(
         'INSERT INTO users (email, password) VALUES (?, ?)',
-        [ req.body.mail, req.body.password],
+        [ mail, password],
         (err, results) => {
           if (err) {
             console.error('Erreur lors de l\'insertion des données : ', err);
           }
+          res.send({ data: `Utilisateur créé et stocké dans la base de données` })
         }
       );
-
-    res.send({ data: `Utilisateur créé et stocké dans la base de données` })
   }
 )
 

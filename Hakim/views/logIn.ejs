@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+</head>
+<body>
+    <h2>Log In</h2>
+
+    <form action="/logIn" method="post">
+        <input type="text" name="mail" placeholder="Mail">
+        <input type="text" name="password" placeholder="Password">
+        <input type="submit">
+    </form>
+    <script>
+    //   document.getElementById('loginForm').addEventListener('submit', async function(event) {
+    //   event.preventDefault();
+
+    //   const formData = new FormData(this);
+    //   const mail = formData.get('mail');
+    //   const password = formData.get('password');
+
+    //   // Envoyer une requête POST au serveur pour se connecter
+    //   const response = await fetch('/logIn', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ mail, password }),
+    //   });
+
+    //   const data = await response.json();
+
+    //   if (data.success) {
+    //     alert('Login réussi');
+    //   } else {
+    //     alert(data.message);
+    //   }
+    // });
+  </script>
+</body>
+</html>

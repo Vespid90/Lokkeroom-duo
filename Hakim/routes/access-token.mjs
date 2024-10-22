@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 const JWT_KEY = process.env.JWT_KEY;
 
 const verifyToken = (req, res, next) => {
-    const token = req.headers['access-token'];
+    const token = req.cookies['access-token'];
 
     if(!token) {
         return res.send({success: false, message: "Token manquant"});
